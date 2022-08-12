@@ -9,44 +9,44 @@ SECTION "Header", ROM0[$100]
 	ds $150 - @, 0
 	
 EntryPoint:
-	ld a, 0
-	ld [rNR52],a
+	ld a, 0		
+	ld [rNR52],a		; Turn off speaker
 	
 	call WaitVBlank
 	call TurnOffLCD
-	call MemSet8000
-	call MemSet8800
+	call MemSet8000		; Clear sprite VRAM
+	call MemSet8800		; Clear background/window VRAM
 	
-	ld de, $C000
+	ld de, $C000	
 	ld bc, $CFFF - $C000
-	call MemSet
+	call MemSet			; Clear memory for ShadowOAM
 	
-	;call MemSet9800
-	;call MemSet9C00
-	;call MemSetHRAM
+	;call MemSet9800	<- causes errors?
+	;call MemSet9C00	<- causes errors?
+	;call MemSetHRAM	<- causes errors?
 	
 	ld hl, ShegoTiles
 	ld bc, ShegoTilesEnd - ShegoTiles
 	ld de, $8000
-	call MemCopy
+	call MemCopy		; Copy sprite tiles to VRAM
 	
-	call CopyOAMDMARoutine
+	call CopyOAMDMARoutine	; DMA routine for sprites copied to HRAM
 		
 	ld hl, Background0Tiles
 	ld bc, Background0TilesEnd - Background0Tiles
 	ld de, $9000
-	call MemCopy
+	call MemCopy			; laod background tiles into VRAM
 	
 	ld hl, Background0Map
 	ld bc, Background0MapEnd - Background0Map
 	ld de, $9800
-	call MemCopy
+	call MemCopy			; set tilemap for background in VRAM
 	
 	xor a
-	ld [rSCX], a
+	ld [rSCX], a			; set scroll registers
 	ld [rSCY], a
 	
-	call OAMDMAStart
+	call OAMDMAStart		; Start a OAM DMA routine
 	
 	; move Shego sprite tiles into position
 	ld a, 100 ; y position
