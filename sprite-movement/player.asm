@@ -20,6 +20,10 @@ MoveForward:
 	ld b, a
 	
 .rightButton
+	/* check if right directional button has been pressed.
+	If yes, then move sprite forward by 8 pizels.
+	If no, then end the routine.
+	*/
 	ld a, %00000001
 	cp b
 	jp z, .rightMove
