@@ -1,6 +1,8 @@
 INCLUDE "hardware.inc"
 INCLUDE "memory.asm"
 INCLUDE "oamdma-alternative.asm"
+INCLUDE "player.asm"
+INCLUDE "screenmovement.asm"
 
 
 SECTION "Header", ROM0[$100]
@@ -12,8 +14,10 @@ EntryPoint:
 	ld a, 0		
 	ld [rNR52],a		; Turn off speaker
 	
+Setup:	
 	call WaitVBlank
 	call TurnOffLCD
+	
 	call MemSet8000		; Clear sprite VRAM
 	call MemSet8800		; Clear background/window VRAM
 	
@@ -21,17 +25,13 @@ EntryPoint:
 	ld bc, $CFFF - $C000
 	call MemSet			; Clear memory for ShadowOAM
 	
-	;call MemSet9800	<- causes errors?
-	;call MemSet9C00	<- causes errors?
-	;call MemSetHRAM	<- causes errors?
-	
+	call CopyOAMDMARoutine	; DMA routine for sprites copied to HRAM
+		
 	ld hl, ShegoTiles
 	ld bc, ShegoTilesEnd - ShegoTiles
 	ld de, $8000
 	call MemCopy		; Copy sprite tiles to VRAM
-	
-	call CopyOAMDMARoutine	; DMA routine for sprites copied to HRAM
-		
+
 	ld hl, Background0Tiles
 	ld bc, Background0TilesEnd - Background0Tiles
 	ld de, $9000
@@ -46,103 +46,55 @@ EntryPoint:
 	ld [rSCX], a			; set scroll registers
 	ld [rSCY], a
 	
-	call OAMDMAStart		; Start a OAM DMA routine
+	;call OAMDMAStart		; Start a OAM DMA routine
 	
 	; move Shego sprite tiles into position
 	ld a, 100 ; y position
-	ld [$FE00 + 0], a
+	ld [ShadowOAM + 0], a
 	ld a, 8  ; x position
-	ld [$FE00 + 1], a
+	ld [ShadowOAM + 1], a
 	ld a, 0   ; tile number
-	ld [$FE00 + 2], a
+	ld [ShadowOAM + 2], a
 	ld a, 0   ; sprite attributes
-	ld [$FE00 + 3], a
+	ld [ShadowOAM + 3], a
 	
 	ld a, 100  ; y position
-	ld [$FE00 + 8], a
+	ld [ShadowOAM + 8], a
 	ld a, 16  ; x position
-	ld [$FE00 + 9], a
+	ld [ShadowOAM + 9], a
 	ld a, 2   ; tile number
-	ld [$FE00 + 10], a
+	ld [ShadowOAM + 10], a
 	ld a, 0   ; sprite attributes
-	ld [$FE00 + 11], a
+	ld [ShadowOAM + 11], a
 	
 	ld a, 116  ; y position
-	ld [$FE00 + 16], a
+	ld [ShadowOAM + 16], a
 	ld a, 8  ; x position
-	ld [$FE00 + 17], a
+	ld [ShadowOAM + 17], a
 	ld a, 4   ; tile number
-	ld [$FE00 + 18], a
+	ld [ShadowOAM + 18], a
 	ld a, 0   ; sprite attributes
-	ld [$FE00 + 19], a
+	ld [ShadowOAM + 19], a
 
 	ld a, 116  ; y position
-	ld [$FE00 + 24], a
+	ld [ShadowOAM + 24], a
 	ld a, 16  ; x position
-	ld [$FE00 + 25], a
+	ld [ShadowOAM + 25], a
 	ld a, 6   ; tile number
-	ld [$FE00 + 26], a
+	ld [ShadowOAM + 26], a
 	ld a, 0   ; sprite attributes
-	ld [$FE00 + 27], a
+	ld [ShadowOAM + 27], a
 	
 	
 	call TurnOnLCD
 
 ; game loop
 Loop:
-	
-	xor a
-	ld b, 1
-	ld a, [rSCX]
-	add a, b
-	ld [rSCX], a
-	
-	ld bc, $8888
-.frametime
-	nop
-	dec bc
-	ld a, b
-	or a, c
-	jr nz, .frametime
-	
+	call FrameControl
 	call WaitVBlank
 	call OAMDMAStart
-	
-	ld a, 100 ; y position
-	ld [$FE00 + 0], a
-	ld a, 8  ; x position
-	ld [$FE00 + 1], a
-	ld a, 0   ; tile number
-	ld [$FE00 + 2], a
-	ld a, 0   ; sprite attributes
-	ld [$FE00 + 3], a
-	
-	ld a, 100  ; y position
-	ld [$FE00 + 8], a
-	ld a, 16  ; x position
-	ld [$FE00 + 9], a
-	ld a, 2   ; tile number
-	ld [$FE00 + 10], a
-	ld a, 0   ; sprite attributes
-	ld [$FE00 + 11], a
-	
-	ld a, 116  ; y position
-	ld [$FE00 + 16], a
-	ld a, 8  ; x position
-	ld [$FE00 + 17], a
-	ld a, 4   ; tile number
-	ld [$FE00 + 18], a
-	ld a, 0   ; sprite attributes
-	ld [$FE00 + 19], a
-
-	ld a, 116  ; y position
-	ld [$FE00 + 24], a
-	ld a, 16  ; x position
-	ld [$FE00 + 25], a
-	ld a, 6   ; tile number
-	ld [$FE00 + 26], a
-	ld a, 0   ; sprite attributes
-	ld [$FE00 + 27], a
+	call MoveForward
+	call BackgroundScroll
 	
 	jp Loop
 
