@@ -3,9 +3,29 @@ INCLUDE "hardware.inc"
 
 SECTION "Player data, attributes, and routines", ROM0
 
-
-; Move player forward
+	
 MoveForward:
+.getDirection
+	ld a, %00100000
+	ldh [rP1], a	; tell register we want to read directional input
+	ldh a, [rP1]
+	ldh a, [rP1]
+	ldh a, [rP1]
+	ldh a, [rP1]
+	ldh a, [rP1]
+	ldh a, [rP1]
+	ldh a, [rP1]
+	cpl			; flip all the bits, since they are inverted in rP1
+	and $0F		; lower nibble of rP1 has directional inputs
+	ld b, a
+	
+.rightButton
+	ld a, %00000001
+	cp b
+	jp z, .rightMove
+	ret
+
+.rightMove
 	ld a, 100 ; y position
 	ld [ShadowOAM + 0], a
 	
