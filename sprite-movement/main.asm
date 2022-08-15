@@ -1,6 +1,6 @@
 INCLUDE "hardware.inc"
 INCLUDE "memory.asm"
-INCLUDE "oamdma-alternative.asm"
+;INCLUDE "oamdma-alternative.asm"
 INCLUDE "player.asm"
 INCLUDE "screenmovement.asm"
 
@@ -46,55 +46,17 @@ Setup:
 	ld [rSCX], a			; set scroll registers
 	ld [rSCY], a
 	
-	;call OAMDMAStart		; Start a OAM DMA routine
-	
-	; move Shego sprite tiles into position
-	ld a, 100 ; y position
-	ld [ShadowOAM + 0], a
-	ld a, 8  ; x position
-	ld [ShadowOAM + 1], a
-	ld a, 0   ; tile number
-	ld [ShadowOAM + 2], a
-	ld a, 0   ; sprite attributes
-	ld [ShadowOAM + 3], a
-	
-	ld a, 100  ; y position
-	ld [ShadowOAM + 8], a
-	ld a, 16  ; x position
-	ld [ShadowOAM + 9], a
-	ld a, 2   ; tile number
-	ld [ShadowOAM + 10], a
-	ld a, 0   ; sprite attributes
-	ld [ShadowOAM + 11], a
-	
-	ld a, 116  ; y position
-	ld [ShadowOAM + 16], a
-	ld a, 8  ; x position
-	ld [ShadowOAM + 17], a
-	ld a, 4   ; tile number
-	ld [ShadowOAM + 18], a
-	ld a, 0   ; sprite attributes
-	ld [ShadowOAM + 19], a
-
-	ld a, 116  ; y position
-	ld [ShadowOAM + 24], a
-	ld a, 16  ; x position
-	ld [ShadowOAM + 25], a
-	ld a, 6   ; tile number
-	ld [ShadowOAM + 26], a
-	ld a, 0   ; sprite attributes
-	ld [ShadowOAM + 27], a
-	
-	
+	call StartSprite
 	call TurnOnLCD
 
 ; game loop
 Loop:
-	call FrameControl
+	;call FrameControl
 	call WaitVBlank
 	call OAMDMAStart
 	call MoveForward
-	call BackgroundScroll
+	call MoveBackward
+	;call BackgroundScroll
 	
 	jp Loop
 
