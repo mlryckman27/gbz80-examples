@@ -1,5 +1,5 @@
 INCLUDE "hardware.inc"
-INCLUDE "memory.asm"
+;INCLUDE "memory.asm"
 ;INCLUDE "oamdma-alternative.asm"
 INCLUDE "player.asm"
 INCLUDE "screenmovement.asm"
@@ -52,9 +52,10 @@ Setup:
 ; game loop
 Loop:
 	call WaitVBlank
+	call MovePlayerTest
 	call OAMDMAStart
 	;call MovePlayer
-	call MovePlayerTest
+
 	
 	jp Loop
 

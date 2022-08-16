@@ -1,6 +1,6 @@
 INCLUDE "hardware.inc"
 INCLUDE "oamdma-alternative.asm"
-
+INCLUDE "memory.asm"
 
 SECTION "Player coordinates", HRAM
 
@@ -250,6 +250,9 @@ MovePlayerTest:
 	or b
 	ld b, a
 	
+	ld a, $30
+	ld [rP1], a
+	
 .rightButton
 	/* check if right directional button has been pressed.
 	If yes, then move sprite forward by 8 pizels.
@@ -332,14 +335,17 @@ MovePlayerTest:
 	ret
 	
 .jumpMove
-	ld a, 4
 	ld hl, ShadowOAM + 0
 	ld a, [hl]
 	ld b, 4
-	add b
-	
+	sub b
 	ld [ShadowOAM + 0], a
 	ld [ShadowOAM + 8], a
+
+	ld hl, ShadowOAM + 16
+	ld a, [hl]
+	ld b, 4
+	sub b
 	ld [ShadowOAM + 16], a
 	ld [ShadowOAM + 24], a
 	
@@ -350,17 +356,29 @@ MovePlayerTest:
 	ld [JumpCounter], a
 	xor a
 	cp b
+	
+	call WaitVBlank
+	call OAMDMAStart
 	jp nz, .jumpMove
 	
-	ld a, 100 ; y position
+	ld a, 100
 	ld [ShadowOAM + 0], a
 	ld [ShadowOAM + 8], a
-	ld a, 116  ; y position
+
+	ld a, 116
 	ld [ShadowOAM + 16], a
 	ld [ShadowOAM + 24], a
+	
+	call WaitVBlank
+	call OAMDMAStart
+	
+	; Reset JumpCounter variable in HRAM
+	ld hl, JumpCounter
+	ld a, $FF
+	ld [hl], a
 
 	ret
-
+	
 ;.jumpAndMove
 	
 	
