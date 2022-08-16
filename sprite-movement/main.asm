@@ -51,12 +51,10 @@ Setup:
 
 ; game loop
 Loop:
-	;call FrameControl
 	call WaitVBlank
 	call OAMDMAStart
-	call MoveForward
-	call MoveBackward
-	;call BackgroundScroll
+	;call MovePlayer
+	call MovePlayerTest
 	
 	jp Loop
 
