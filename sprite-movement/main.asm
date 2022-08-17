@@ -46,17 +46,32 @@ Setup:
 	ld [rSCX], a			; set scroll registers
 	ld [rSCY], a
 	
-	call StartSprite
+	call Player.init
 	call TurnOnLCD
 
 ; game loop
 Loop:
 	call WaitVBlank
-	call MovePlayerTest
-	call OAMDMAStart
-	;call MovePlayer
+	call CheckButtons
 
+.btn_b::
+	bit 1, b
+	jr z, .right
 	
+.right::
+	bit 4, b
+	jr z, .left
+	call Player.moveRight
+	
+.left::
+	bit 5, b
+	jr z, .continue
+	call Player.moveLeft
+
+.continue
+	call Player.update
+	call OAMDMAStart
+
 	jp Loop
 
 
