@@ -1,6 +1,6 @@
 INCLUDE "hardware.inc"
-INCLUDE "oamdma-alternative.asm"
-INCLUDE "memory.asm"
+;INCLUDE "oamdma-alternative.asm"
+;INCLUDE "memory.asm"
 
 SECTION "Player coordinates", WRAM0
 
@@ -38,9 +38,9 @@ Player::
 	ld a, 8
 	ld [PlayerX], a				; Set intial player x- position
 	
-	ld a, 40
+	ld a, $00
 	ld [PlayerYVelocity], a		; Initialize vertical player velocity
-	ld a, 10
+	ld a, $00
 	ld [PlayerXVelocity], a		; Initialize horizontal player velocity
 	
 	xor a
@@ -136,7 +136,8 @@ Player::
 	
 .moveRight::
 	ld hl, PlayerX
-	inc [hl]
+	ld a, 1
+	ld bc 0
 	ret
 	
 .moveLeft::
