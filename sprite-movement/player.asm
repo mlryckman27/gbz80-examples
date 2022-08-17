@@ -2,7 +2,7 @@ INCLUDE "hardware.inc"
 INCLUDE "oamdma-alternative.asm"
 INCLUDE "memory.asm"
 
-SECTION "Player coordinates", HRAM
+SECTION "Player coordinates", WRAM0
 
 PlayerX::
 	DS 1
