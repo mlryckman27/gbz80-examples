@@ -38,9 +38,9 @@ Player::
 	ld a, 8
 	ld [PlayerX], a				; Set intial player x- position
 	
-	ld a, $00
+	ld a, $01
 	ld [PlayerYVelocity], a		; Initialize vertical player velocity
-	ld a, $00
+	ld a, $01
 	ld [PlayerXVelocity], a		; Initialize horizontal player velocity
 	
 	xor a
@@ -141,11 +141,11 @@ Player::
 	cp b
 	jp z, .incVelocityX
 	ld hl, PlayerXVelocity
-	xor a
+	ld a, 1
 	ld [hl], a
 .right
 	ld hl, PlayerX
-	ld a, [bc]
+	ld a, [PlayerXVelocity]
 	add 1
 	add [hl]
 	ld [hl], a
@@ -153,7 +153,7 @@ Player::
 .incVelocityX
 	ld a, [PlayerXVelocity]
 	ld b, a
-	ld a, 5
+	ld a, 4
 	cp b
 	jp z, .right
 	ld hl, PlayerXVelocity
