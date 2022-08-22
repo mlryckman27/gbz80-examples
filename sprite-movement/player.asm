@@ -135,10 +135,30 @@ Player::
 	ret
 	
 .moveRight::
+	ld a, [Previous]
+	ld b, a
+	ld a, [Current]
+	cp b
+	jp z, .incVelocityX
+	ld hl, PlayerXVelocity
+	xor a
+	ld [hl], a
+.right
 	ld hl, PlayerX
-	ld a, 1
-	ld bc 0
+	ld a, [bc]
+	add 1
+	add [hl]
+	ld [hl], a
 	ret
+.incVelocityX
+	ld a, [PlayerXVelocity]
+	ld b, a
+	ld a, 5
+	cp b
+	jp z, .right
+	ld hl, PlayerXVelocity
+	inc [hl]
+	jp .right
 	
 .moveLeft::
 	ld hl, PlayerX
@@ -146,7 +166,8 @@ Player::
 	ret
 
 .jump::
-
+	ld hl, PlayerXVelocity
+	
 
 CheckButtons::
 	ld a, %00100000
