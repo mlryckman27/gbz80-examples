@@ -19,6 +19,7 @@ Setup:
 	ld hl, Globals.frameCount
 	xor a
 	ld [hl], a
+	
 	call WaitVBlank
 	call TurnOffLCD
 	
