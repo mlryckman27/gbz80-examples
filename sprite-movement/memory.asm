@@ -1,20 +1,37 @@
 INCLUDE "hardware.inc"
 	
+SECTION "Frame data", WRAM0
+
+Globals::
+.frameCount::
+	DS 1
+	
 	
 SECTION "Memory routines", ROM0
 
-WaitVBlank:
+WaitVBlank::
 	ld a, [rLY]
 	cp 144
 	jp c, WaitVBlank
+	call FrameCounter
 	ret
 	
-TurnOffLCD:
+FrameCounter::
+	ld hl, Globals.frameCount
+	inc [hl]
+	ld a, [hl]
+	cp 60
+	jp nz, FrameCounter
+	xor a
+	ld [hl], a
+	ret
+	
+TurnOffLCD::
 	ld a, 0
 	ld [rLCDC], a
 	ret
 	
-TurnOnLCD:
+TurnOnLCD::
 	ld a, %10000111
 	ld [rLCDC], a
 	
@@ -24,7 +41,7 @@ TurnOnLCD:
 	ld [rOBP1], a
 	ret
 	
-MemSet:
+MemSet::
 	; de = destination addr
 	; bc = byte count
 .copy
@@ -37,7 +54,7 @@ MemSet:
 	jp nz, .copy
 	ret
 	
-MemSet8000:
+MemSet8000::
 	ld hl, _VRAM8000
 	ld bc, $87F0 - $8000
 .copy
@@ -50,7 +67,7 @@ MemSet8000:
 	jp nz, .copy
 	ret
 	
-MemSet8800:
+MemSet8800::
 	ld hl, $8800
 	ld bc, $97FF - $8800
 .copy
@@ -63,7 +80,7 @@ MemSet8800:
 	jp nz, .copy
 	ret
 	
-MemSet9800:
+MemSet9800::
 	ld hl, $9800
 	ld bc, $9BFF - $9800
 .copy
@@ -76,7 +93,7 @@ MemSet9800:
 	jp nz, .copy
 	ret
 
-MemSet9C00:
+MemSet9C00::
 	ld hl, $9C00
 	ld bc, $9FFF - $9C00
 .copy
@@ -89,7 +106,7 @@ MemSet9C00:
 	jp nz, .copy
 	ret	
 	
-MemSetHRAM:
+MemSetHRAM::
 	;FFFE - FF80
 	ld de, $FF80
 	ld bc, $FFFE - $FF80
@@ -106,7 +123,7 @@ MemSetHRAM:
 ; hl: tile data location
 ; bc: number of bytes to copy
 ; de: destination address
-MemCopy:
+MemCopy::
 	; ld hl, tile data address
 	; ld bc, number of bytes to copy
 	; ld de, destination address

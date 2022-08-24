@@ -1,8 +1,8 @@
 INCLUDE "hardware.inc"
-INCLUDE "memory.asm"
+;INCLUDE "memory.asm"
 INCLUDE "oamdma-alternative.asm"
 INCLUDE "tiledata.asm"
-INCLUDE "player.asm"
+;INCLUDE "player.asm"
 INCLUDE "screenmovement.asm"
 
 
@@ -16,6 +16,9 @@ EntryPoint:
 	ld [rNR52],a		; Turn off speaker
 	
 Setup:	
+	ld hl, Globals.frameCount
+	xor a
+	ld [hl], a
 	call WaitVBlank
 	call TurnOffLCD
 	
@@ -58,6 +61,7 @@ Loop:
 .btn_b::
 	bit 1, b
 	jr z, .right
+	call Player.jump
 	
 .right::
 	bit 4, b

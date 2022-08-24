@@ -1,6 +1,6 @@
 INCLUDE "hardware.inc"
-;INCLUDE "oamdma-alternative.asm"
-;INCLUDE "memory.asm"
+
+
 
 SECTION "Player coordinates", WRAM0
 
@@ -166,7 +166,18 @@ Player::
 	ret
 
 .jump::
-	ld hl, PlayerXVelocity
+	ld hl, PlayerY
+	dec [hl]
+	ld a, [Globals.frameCount] 
+	cp 60
+	jp nz, .jump
+.fall
+	inc [hl]
+	ld a, [PlayerY]
+	cp 100
+	jp nz, .fall
+	ret
+	
 	
 
 CheckButtons::
