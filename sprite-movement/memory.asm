@@ -14,6 +14,7 @@ WaitVBlank::
 	cp 144
 	jp c, WaitVBlank
 	call FrameCounter
+.end
 	ret
 	
 FrameCounter::
@@ -21,7 +22,7 @@ FrameCounter::
 	inc [hl]
 	ld a, [hl]
 	cp 60
-	jp nz, FrameCounter
+	jp nz, WaitVBlank.end
 	xor a
 	ld [hl], a
 	ret

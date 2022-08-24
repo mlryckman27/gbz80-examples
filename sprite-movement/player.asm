@@ -167,10 +167,17 @@ Player::
 
 .jump::
 	ld hl, PlayerY
+	ld a, 20
+	ld b, a
+.loop
 	dec [hl]
-	ld a, [Globals.frameCount] 
-	cp 60
-	jp nz, .jump
+	dec b
+	cp b
+	jp nz, .loop
+	
+	;ld a, [Globals.frameCount] 
+	;cp 60
+	;jp nz, .jump
 .fall
 	inc [hl]
 	ld a, [PlayerY]
