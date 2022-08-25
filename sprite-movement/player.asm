@@ -15,9 +15,6 @@ Previous::
 Current::
 	DS 1
 	
-JumpCounter::
-	DS 1
-	
 PlayerXVelocity::
 	DS 1
 
@@ -45,9 +42,6 @@ Player::
 	xor a
 	ld [Previous], a
 	ld [Current], a
-	
-;	ld a, $FF
-;	ld [JumpCounter], a
 
 ; move Shego sprite tiles into position
 
@@ -166,25 +160,9 @@ Player::
 
 .jump::
 	ld hl, PlayerY
-	ld a, 20
-	ld b, a
-.loop
 	dec [hl]
-	dec b
-	cp b
-	jp nz, .loop
-	
-	;ld a, [Globals.frameCount] 
-	;cp 60
-	;jp nz, .jump
-.fall
-	inc [hl]
-	ld a, [PlayerY]
-	cp 100
-	jp nz, .fall
 	ret
-	
-	
+
 
 .checkButtons::
 	ld a, %00100000

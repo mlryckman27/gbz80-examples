@@ -18,6 +18,11 @@ Setup:
 	; Turn off LCD, so VRAM can be written to
 	call TurnOffLCD
 	
+	; Initialize FrameCount to zero
+	ld hl, FrameCount
+	xor a
+	ld [hl], a
+	
 	; Clear the VRAM
 	call MemSet8000
 	call MemSet8800
