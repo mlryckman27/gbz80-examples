@@ -25,6 +25,6 @@
 ShegoLabelBank EQU 0
 
 ; Start of tile array.
- GLOBAL ShegoLabel
+ShegoLabel::
 
 ; End of SHEGO.INC

@@ -1,10 +1,4 @@
-INCLUDE "hardware.inc"
-	
-SECTION "Frame data", WRAM0
-
-Globals::
-.frameCount::
-	DS 1
+INCLUDE "inc/hardware.inc"
 	
 	
 SECTION "Memory routines", ROM0
@@ -13,19 +7,19 @@ WaitVBlank::
 	ld a, [rLY]
 	cp 144
 	jp c, WaitVBlank
-	call FrameCounter
-.end
+;	call FrameCounter
+;.end
 	ret
 	
-FrameCounter::
-	ld hl, Globals.frameCount
-	inc [hl]
-	ld a, [hl]
-	cp 60
-	jp nz, WaitVBlank.end
-	xor a
-	ld [hl], a
-	ret
+;FrameCounter::
+;	ld hl, Globals.frameCount
+;	inc [hl]
+;	ld a, [hl]
+;	cp 60
+;	jp nz, WaitVBlank.end
+;	xor a
+;	ld [hl], a
+;	ret
 	
 TurnOffLCD::
 	ld a, 0

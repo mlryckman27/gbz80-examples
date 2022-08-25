@@ -1,4 +1,4 @@
-INCLUDE "hardware.inc"
+INCLUDE "inc/hardware.inc"
 
 
 SECTION "ShadowOAM Buffer", WRAM0

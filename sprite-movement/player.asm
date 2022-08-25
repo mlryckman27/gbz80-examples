@@ -1,5 +1,4 @@
-INCLUDE "hardware.inc"
-
+INCLUDE "inc/hardware.inc"
 
 
 SECTION "Player coordinates", WRAM0
@@ -47,8 +46,8 @@ Player::
 	ld [Previous], a
 	ld [Current], a
 	
-	ld a, $FF
-	ld [JumpCounter], a
+;	ld a, $FF
+;	ld [JumpCounter], a
 
 ; move Shego sprite tiles into position
 
@@ -187,7 +186,7 @@ Player::
 	
 	
 
-CheckButtons::
+.checkButtons::
 	ld a, %00100000
 	ldh [rP1], a
 	ldh a, [rP1]

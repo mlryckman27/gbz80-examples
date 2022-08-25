@@ -18,6 +18,6 @@ Background0LabelWidth  EQU 32
 Background0LabelHeight EQU 32
 Background0LabelBank   EQU 0
 
- GLOBAL Background0Label
+Background0Label::
 
 ; End of BACKGROUND0.INC

@@ -1,9 +1,5 @@
-INCLUDE "hardware.inc"
-;INCLUDE "memory.asm"
-INCLUDE "oamdma-alternative.asm"
-INCLUDE "tiledata.asm"
-;INCLUDE "player.asm"
-INCLUDE "screenmovement.asm"
+INCLUDE "inc/hardware.inc"
+INCLUDE "img/tiledata.asm"
 
 
 SECTION "Header", ROM0[$100]
@@ -13,52 +9,61 @@ SECTION "Header", ROM0[$100]
 	
 EntryPoint:
 	ld a, 0		
-	ld [rNR52],a		; Turn off speaker
-	
-Setup:	
-	ld hl, Globals.frameCount
-	xor a
-	ld [hl], a
-	
+	ld [rNR52], a
+
+Setup:
+	; Wait for VBlank period, then execute all setup routines
 	call WaitVBlank
+	
+	; Turn off LCD, so VRAM can be written to
 	call TurnOffLCD
 	
-	call MemSet8000		; Clear sprite VRAM
-	call MemSet8800		; Clear background/window VRAM
-	
-	ld de, $C000	
-	ld bc, $CFFF - $C000
-	call MemSet			; Clear memory for ShadowOAM
-	
-	call CopyOAMDMARoutine	; DMA routine for sprites copied to HRAM
-		
-	ld hl, ShegoTiles
-	ld bc, ShegoTilesEnd - ShegoTiles
-	ld de, $8000
-	call MemCopy		; Copy sprite tiles to VRAM
+	; Clear the VRAM
+	call MemSet8000
+	call MemSet8800
+	call MemSet9800
+	call MemSet9C00
 
+	
+	; Clear the ShadowOAM to store sprite data before being copied to OAM
+	ld de, $C000
+	ld bc, $CFFF - $C000
+	call MemSet
+	
+	; Copy the OAM DMA routine to HRAM
+	call CopyOAMDMARoutine
+	
+	; Copy Sprites and tiles to VRAM
+	ld hl, ShegoTiles
+	ld de, $8000
+	ld bc, ShegoTilesEnd - ShegoTiles
+	call MemCopy
+	
 	ld hl, Background0Tiles
 	ld bc, Background0TilesEnd - Background0Tiles
 	ld de, $9000
-	call MemCopy			; laod background tiles into VRAM
+	call MemCopy	
 	
 	ld hl, Background0Map
 	ld bc, Background0MapEnd - Background0Map
 	ld de, $9800
-	call MemCopy			; set tilemap for background in VRAM
+	call MemCopy
 	
+	; Reset the LCD scroll registers to position (0, 0)
 	xor a
-	ld [rSCX], a			; set scroll registers
 	ld [rSCY], a
+	ld [rSCX], a
 	
+	; Load in the player's sprites and initialize attributes
 	call Player.init
+	
+	; Turn on LCD
 	call TurnOnLCD
-
-; game loop
-Loop:
+	
+GameLoop:
 	call WaitVBlank
-	call CheckButtons
-
+	call Player.checkButtons
+	
 .btn_b::
 	bit 1, b
 	jr z, .right
@@ -77,6 +82,6 @@ Loop:
 .continue
 	call Player.update
 	call OAMDMAStart
-
-	jp Loop
-
+	
+	jp GameLoop
+	

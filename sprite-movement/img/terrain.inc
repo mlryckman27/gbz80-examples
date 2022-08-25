@@ -25,6 +25,6 @@
 TerrainLabelBank EQU 0
 
 ; Start of tile array.
- GLOBAL TerrainLabel
+TerrainLabel::
 
 ; End of TERRAIN.INC
