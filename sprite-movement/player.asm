@@ -21,6 +21,12 @@ PlayerXVelocity::
 PlayerYVelocity::
 	DS 1
 	
+PlayerJumpStatus::
+	DS 1
+	
+JumpFrameStart::
+	DS 1
+	
 
 SECTION "Player data, attributes, and routines", ROM0
 
@@ -42,6 +48,9 @@ Player::
 	xor a
 	ld [Previous], a
 	ld [Current], a
+	
+	ld [PlayerJumpStatus], a
+	ld [JumpFrameStart], a
 
 ; move Shego sprite tiles into position
 
@@ -157,11 +166,45 @@ Player::
 	ld hl, PlayerX
 	dec [hl]
 	ret
-
+	
 .jump::
-	ld hl, PlayerY
-	dec [hl]
+	ld a, [PlayerJumpStatus]
+	cp 1
+	jp z, .getFrameStart
+	jp .jumpLoop
+.getFrameStart
+	ld a, [FrameCount]
+	ld hl, JumpFrameStart
+	ld [hl], a
+.jumpLoop
+	ld de, PlayerY
+	dec [de]
+	
+	push de
+	call Player.update
+	call OAMDMAStart
+	pop de
+	
+	ld hl, FrameCount
+	ld bc, JumpFrameStart
+	push bc
+	push hl
+	push de
+	call WaitVBlank
+	pop de
+	pop hl
+	pop bc
+	
+	ld a, [hl]
+	sub [bc]
+	cp 20
+	jp nz, .jumpLoop
+.end
+	ld hl, PlayerJumpStatus
+	xor a,
+	ld [hl], a
 	ret
+
 
 
 .checkButtons::
