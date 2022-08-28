@@ -177,31 +177,27 @@ Player::
 	ld hl, JumpFrameStart
 	ld [hl], a
 .jumpLoop
-	ld de, PlayerY
-	dec [de]
+	ld hl, PlayerY
+	dec [hl]
 	
-	push de
 	call Player.update
 	call OAMDMAStart
-	pop de
 	
-	ld hl, FrameCount
-	ld bc, JumpFrameStart
+	ld bc, FrameCount
+	ld hl, JumpFrameStart
 	push bc
 	push hl
-	push de
 	call WaitVBlank
-	pop de
 	pop hl
 	pop bc
 	
-	ld a, [hl]
-	sub [bc]
+	ld a, [bc]
+	sub [hl]
 	cp 20
 	jp nz, .jumpLoop
 .end
 	ld hl, PlayerJumpStatus
-	xor a,
+	xor a
 	ld [hl], a
 	ret
 
